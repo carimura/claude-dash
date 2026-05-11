@@ -2,6 +2,8 @@
 
 A dashboard for Claude Code sessions to easily organize your active and recent sessions. For those who like working on the terminal but also have lots of projects going in parallel.
 
+![Claude Dash screenshot](docs/screenshot.png)
+
 ## Requirements
 
 - macOS 14+
