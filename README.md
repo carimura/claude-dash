@@ -1,6 +1,6 @@
 # Claude Dash
 
-A tiny Mac dashboard for your Claude Code sessions. Lists recent projects, marks the ones that are currently running, and resumes them in [Ghostty](https://ghostty.org) with one click.
+A dashboard for Claude Code sessions to easily organize your active and recent sessions. For those who like working on the terminal but have lots of parallel sessions.
 
 ## Requirements
 
