@@ -112,6 +112,7 @@ enum Resumer {
         task.launchPath = "/usr/bin/open"
         task.arguments = ["-na", "Ghostty.app", "--args",
                           "--working-directory=\(cwd)",
+                          "--quit-after-last-window-closed=true",
                           "--command=claude --resume \(s.id)"]
         try? task.run()
     }
