@@ -84,7 +84,7 @@ enum ActiveDetector {
                 .first { $0.hasPrefix("n") }
                 .map { String($0.dropFirst()) }
             guard let cwd else { continue }
-            let encoded = cwd.replacingOccurrences(of: "/", with: "-")
+            let encoded = encodeCwd(cwd)
             let projDir = "\(root)/\(encoded)"
             guard let files = try? fm.contentsOfDirectory(atPath: projDir) else { continue }
 
@@ -116,6 +116,14 @@ enum Resumer {
                           "--command=claude --resume \(s.id)"]
         try? task.run()
     }
+}
+
+private func encodeCwd(_ cwd: String) -> String {
+    var s = ""
+    for ch in cwd {
+        s.append((ch == "/" || ch == ".") ? "-" : ch)
+    }
+    return s
 }
 
 private func runCmd(_ path: String, _ args: [String]) -> String {
