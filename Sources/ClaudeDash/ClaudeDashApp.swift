@@ -6,7 +6,7 @@ struct ClaudeDashApp: App {
     @StateObject private var names = ProjectNames()
 
     var body: some Scene {
-        Window("Claude Sessions", id: "main") {
+        Window("Claude Dashboard", id: "main") {
             SessionListView()
                 .environmentObject(store)
                 .environmentObject(names)

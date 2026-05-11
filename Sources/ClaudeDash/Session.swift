@@ -7,6 +7,11 @@ struct Session: Identifiable, Hashable {
     let title: String
     let lastActivity: Date
     let messageCount: Int
+    let inputTokens: Int
+    let outputTokens: Int
+    let contextSize: Int
+
+    var totalTokens: Int { inputTokens + outputTokens }
 }
 
 enum SessionScanner {
@@ -33,8 +38,10 @@ enum SessionScanner {
 
                 var cwd = ""
                 var title = ""
+                var inputTokens = 0
+                var outputTokens = 0
+                var contextSize = 0
                 for line in lines {
-                    if !cwd.isEmpty && !title.isEmpty { break }
                     guard let data = line.data(using: .utf8),
                           let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
                     else { continue }
@@ -46,6 +53,17 @@ enum SessionScanner {
                        !text.isEmpty {
                         title = text
                     }
+                    if obj["type"] as? String == "assistant",
+                       let msg = obj["message"] as? [String: Any],
+                       let usage = msg["usage"] as? [String: Any] {
+                        let inp = (usage["input_tokens"] as? Int) ?? 0
+                        let create = (usage["cache_creation_input_tokens"] as? Int) ?? 0
+                        let read = (usage["cache_read_input_tokens"] as? Int) ?? 0
+                        let out = (usage["output_tokens"] as? Int) ?? 0
+                        inputTokens += inp + create
+                        outputTokens += out
+                        contextSize = inp + create + read
+                    }
                 }
 
                 sessions.append(Session(
@@ -54,7 +72,10 @@ enum SessionScanner {
                     cwd: cwd,
                     title: title.isEmpty ? "(no title)" : title,
                     lastActivity: mtime,
-                    messageCount: lines.count
+                    messageCount: lines.count,
+                    inputTokens: inputTokens,
+                    outputTokens: outputTokens,
+                    contextSize: contextSize
                 ))
             }
         }
@@ -113,7 +134,7 @@ enum Resumer {
         task.arguments = ["-na", "Ghostty.app", "--args",
                           "--working-directory=\(cwd)",
                           "--quit-after-last-window-closed=true",
-                          "--command=claude --resume \(s.id)"]
+                          "--initial-command=claude --resume \(s.id)"]
         try? task.run()
     }
 }

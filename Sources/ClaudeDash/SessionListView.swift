@@ -13,7 +13,7 @@ struct SessionListView: View {
 
     private var header: some View {
         HStack(spacing: 10) {
-            Text("Claude Sessions")
+            Text("Claude Dashboard")
                 .font(.title2.weight(.semibold))
             Spacer()
             Text("\(store.active.count) active · \(store.latestPerDir.count) projects")
@@ -146,7 +146,18 @@ struct RecentRow: View {
                 Label(relativeTime(session.lastActivity), systemImage: "clock")
                     .font(.callout)
                     .foregroundStyle(.secondary)
-                pill(text: "\(session.messageCount)", caption: "messages")
+                pill(text: "\(session.messageCount)", caption: "msgs")
+                if session.contextSize > 0 {
+                    Text("\(formatTokens(session.contextSize)) context")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                }
+                if session.totalTokens > 0 {
+                    Text("\(formatTokens(session.totalTokens)) tokens")
+                        .font(.callout)
+                        .foregroundStyle(.secondary)
+                        .help("\(session.inputTokens.formatted()) in · \(session.outputTokens.formatted()) out")
+                }
                 Text(String(session.id.prefix(8)))
                     .font(.system(.caption, design: .monospaced))
                     .foregroundStyle(.tertiary)
@@ -248,9 +259,16 @@ struct OlderRow: View {
                     .truncationMode(.tail)
             }
             Spacer()
-            Text("\(session.messageCount)")
-                .font(.caption.monospacedDigit())
-                .foregroundStyle(.secondary)
+            if session.totalTokens > 0 {
+                Text(formatTokens(session.totalTokens))
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+                    .help("\(session.inputTokens.formatted()) in · \(session.outputTokens.formatted()) out · \(session.messageCount) msgs")
+            } else {
+                Text("\(session.messageCount)")
+                    .font(.caption.monospacedDigit())
+                    .foregroundStyle(.secondary)
+            }
             Text(relativeTime(session.lastActivity))
                 .font(.caption)
                 .foregroundStyle(.tertiary)
@@ -297,4 +315,11 @@ struct OlderRow: View {
         if s < 86400 { return "\(Int(s / 3600))h ago" }
         return "\(Int(s / 86400))d ago"
     }
+}
+
+func formatTokens(_ n: Int) -> String {
+    if n < 1000 { return "\(n)" }
+    if n < 10_000 { return String(format: "%.1fk", Double(n) / 1000) }
+    if n < 1_000_000 { return "\(n / 1000)k" }
+    return String(format: "%.1fM", Double(n) / 1_000_000)
 }
