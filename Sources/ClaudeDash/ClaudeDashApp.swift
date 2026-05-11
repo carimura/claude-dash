@@ -4,19 +4,25 @@ import SwiftUI
 struct ClaudeDashApp: App {
     @StateObject private var store = SessionStore()
     @StateObject private var names = ProjectNames()
+    @AppStorage(Zoom.key) private var zoomIndex: Int = Zoom.defaultIndex
 
     var body: some Scene {
         Window("Claude Dashboard", id: "main") {
             SessionListView()
                 .environmentObject(store)
                 .environmentObject(names)
+                .environment(\.zoomFactor, Zoom.factor(at: zoomIndex))
                 .frame(minWidth: 720, minHeight: 480)
+        }
+        .commands {
+            ZoomCommands()
         }
 
         MenuBarExtra {
             MenuBarView()
                 .environmentObject(store)
                 .environmentObject(names)
+                .environment(\.zoomFactor, Zoom.factor(at: zoomIndex))
         } label: {
             HStack(spacing: 3) {
                 Image(systemName: "rectangle.stack")

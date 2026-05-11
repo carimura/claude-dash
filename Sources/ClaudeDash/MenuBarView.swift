@@ -10,16 +10,16 @@ struct MenuBarView: View {
         VStack(alignment: .leading, spacing: 0) {
             HStack(spacing: 6) {
                 Circle().fill(.green).frame(width: 8, height: 8).opacity(store.active.isEmpty ? 0.2 : 1)
-                Text("\(store.active.count) active").font(.callout.weight(.medium))
+                Text("\(store.active.count) active").zoomFont(16, weight: .medium)
                 Spacer()
-                Text("\(store.sessions.count) total").font(.caption).foregroundStyle(.secondary)
+                Text("\(store.sessions.count) total").zoomFont(12).foregroundStyle(.secondary)
             }
             .padding(.horizontal, 14).padding(.top, 12).padding(.bottom, 8)
 
             Divider()
 
             if store.sessions.isEmpty {
-                Text("No sessions yet").font(.caption).foregroundStyle(.secondary)
+                Text("No sessions yet").zoomFont(12).foregroundStyle(.secondary)
                     .padding(.horizontal, 14).padding(.vertical, 12)
             } else {
                 VStack(alignment: .leading, spacing: 0) {
@@ -72,25 +72,25 @@ struct MenuBarView: View {
                 VStack(alignment: .leading, spacing: 1) {
                     HStack(spacing: 5) {
                         Text(names.name(for: projectPath(s)))
-                            .font(.system(size: 13, weight: .semibold))
+                            .zoomFont(14, weight: .semibold)
                             .lineLimit(1).truncationMode(.tail)
                         Text(shortPath(s.cwd))
-                            .font(.system(size: 11))
+                            .zoomFont(12)
                             .foregroundStyle(.secondary)
                             .lineLimit(1).truncationMode(.middle)
                     }
                     Text(oneLine(s.title))
-                        .font(.system(size: 11))
+                        .zoomFont(12)
                         .foregroundStyle(.secondary)
                         .lineLimit(1).truncationMode(.tail)
                 }
                 Spacer()
                 if isActive {
-                    Text("●").foregroundStyle(.green).font(.caption2)
+                    Text("●").foregroundStyle(.green).zoomFont(11)
                 } else {
                     Image(systemName: "arrow.up.forward.app")
                         .foregroundStyle(.secondary)
-                        .font(.caption)
+                        .zoomFont(12)
                 }
             }
             .contentShape(Rectangle())

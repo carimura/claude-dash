@@ -14,14 +14,14 @@ struct SessionListView: View {
     private var header: some View {
         HStack(spacing: 10) {
             Text("Claude Dashboard")
-                .font(.title2.weight(.semibold))
+                .zoomFont(22, weight: .semibold)
             Spacer()
             Text("\(store.active.count) active · \(store.latestPerDir.count) projects")
                 .foregroundStyle(.secondary)
-                .font(.callout)
+                .zoomFont(16)
             if let last = store.lastRefresh {
                 Text("updated \(refreshAgo(last))")
-                    .font(.caption)
+                    .zoomFont(12)
                     .foregroundStyle(.tertiary)
                     .id(last)
             }
@@ -73,13 +73,13 @@ struct SessionListView: View {
     private func sectionHeader(_ title: String, subtitle: String?) -> some View {
         HStack(spacing: 8) {
             Text(title)
-                .font(.headline)
+                .zoomFont(17, weight: .semibold)
                 .foregroundStyle(.secondary)
                 .textCase(.uppercase)
                 .tracking(0.5)
             if let subtitle {
                 Text(subtitle)
-                    .font(.caption)
+                    .zoomFont(12)
                     .foregroundStyle(.tertiary)
             }
             Spacer()
@@ -113,18 +113,18 @@ struct RecentRow: View {
                     .fill(isActive ? Color.green : Color.secondary.opacity(0.25))
                     .frame(width: 10, height: 10)
                 Text(names.name(for: projectPath))
-                    .font(.title3.weight(.semibold))
+                    .zoomFont(20, weight: .semibold)
                     .lineLimit(1)
                     .truncationMode(.tail)
                 Text("(\(displayPath))")
-                    .font(.callout)
+                    .zoomFont(16)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.middle)
                 Spacer()
                 if isActive {
                     Text("Active")
-                        .font(.caption.weight(.semibold))
+                        .zoomFont(12, weight: .semibold)
                         .foregroundStyle(.green)
                         .padding(.horizontal, 10)
                         .padding(.vertical, 4)
@@ -137,29 +137,29 @@ struct RecentRow: View {
             }
 
             Text(oneLineTitle)
-                .font(.system(size: 14))
+                .zoomFont(15)
                 .foregroundStyle(.primary.opacity(0.85))
                 .lineLimit(2)
                 .padding(.leading, 20)
 
             HStack(spacing: 12) {
                 Label(relativeTime(session.lastActivity), systemImage: "clock")
-                    .font(.callout)
+                    .zoomFont(16)
                     .foregroundStyle(.secondary)
                 pill(text: "\(session.messageCount)", caption: "msgs")
                 if session.contextSize > 0 {
                     Text("\(formatTokens(session.contextSize)) context")
-                        .font(.callout)
+                        .zoomFont(16)
                         .foregroundStyle(.secondary)
                 }
                 if session.totalTokens > 0 {
                     Text("\(formatTokens(session.totalTokens)) tokens")
-                        .font(.callout)
+                        .zoomFont(16)
                         .foregroundStyle(.secondary)
                         .help("\(session.inputTokens.formatted()) in · \(session.outputTokens.formatted()) out")
                 }
                 Text(String(session.id.prefix(8)))
-                    .font(.system(.caption, design: .monospaced))
+                    .zoomFont(12, design: .monospaced)
                     .foregroundStyle(.tertiary)
                 Spacer()
             }
@@ -197,9 +197,9 @@ struct RecentRow: View {
     private func pill(text: String, caption: String) -> some View {
         HStack(spacing: 5) {
             Text(text)
-                .font(.title3.weight(.semibold).monospacedDigit())
+                .zoomFont(20, weight: .semibold, monoDigit: true)
             Text(caption)
-                .font(.caption)
+                .zoomFont(12)
                 .foregroundStyle(.secondary)
         }
         .padding(.horizontal, 10)
@@ -243,17 +243,17 @@ struct OlderRow: View {
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
                     Text(names.name(for: projectPath))
-                        .font(.callout.weight(.semibold))
+                        .zoomFont(16, weight: .semibold)
                         .lineLimit(1)
                         .truncationMode(.tail)
                     Text("(\(displayPath))")
-                        .font(.caption)
+                        .zoomFont(12)
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
                 Text(oneLineTitle)
-                    .font(.caption)
+                    .zoomFont(12)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                     .truncationMode(.tail)
@@ -261,16 +261,16 @@ struct OlderRow: View {
             Spacer()
             if session.totalTokens > 0 {
                 Text(formatTokens(session.totalTokens))
-                    .font(.caption.monospacedDigit())
+                    .zoomFont(12, monoDigit: true)
                     .foregroundStyle(.secondary)
                     .help("\(session.inputTokens.formatted()) in · \(session.outputTokens.formatted()) out · \(session.messageCount) msgs")
             } else {
                 Text("\(session.messageCount)")
-                    .font(.caption.monospacedDigit())
+                    .zoomFont(12, monoDigit: true)
                     .foregroundStyle(.secondary)
             }
             Text(relativeTime(session.lastActivity))
-                .font(.caption)
+                .zoomFont(12)
                 .foregroundStyle(.tertiary)
                 .frame(width: 56, alignment: .trailing)
             if !isActive {
