@@ -5,6 +5,7 @@ struct Session: Identifiable, Hashable {
     let projectDir: String
     let cwd: String
     let title: String
+    let lastMessage: String
     let lastActivity: Date
     let messageCount: Int
     let inputTokens: Int
@@ -37,7 +38,9 @@ enum SessionScanner {
                 let lines = content.split(separator: "\n", omittingEmptySubsequences: true)
 
                 var cwd = ""
-                var title = ""
+                var firstUserMessage = ""
+                var aiTitle = ""
+                var lastMessage = ""
                 var inputTokens = 0
                 var outputTokens = 0
                 var contextSize = 0
@@ -46,12 +49,33 @@ enum SessionScanner {
                           let obj = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
                     else { continue }
                     if cwd.isEmpty, let c = obj["cwd"] as? String { cwd = c }
-                    if title.isEmpty,
-                       obj["type"] as? String == "user",
+                    let entryType = obj["type"] as? String
+                    if firstUserMessage.isEmpty,
+                       entryType == "user",
                        let msg = obj["message"] as? [String: Any],
                        let text = msg["content"] as? String,
                        !text.isEmpty {
-                        title = text
+                        firstUserMessage = text
+                    }
+                    if entryType == "ai-title",
+                       let t = obj["aiTitle"] as? String, !t.isEmpty {
+                        aiTitle = t
+                    }
+                    if entryType == "user", let msg = obj["message"] as? [String: Any],
+                       let text = msg["content"] as? String, !text.isEmpty {
+                        lastMessage = text
+                    } else if entryType == "assistant", let msg = obj["message"] as? [String: Any],
+                              let content = msg["content"] as? [Any] {
+                        var combined = ""
+                        for item in content {
+                            if let block = item as? [String: Any],
+                               block["type"] as? String == "text",
+                               let text = block["text"] as? String, !text.isEmpty {
+                                if !combined.isEmpty { combined += " " }
+                                combined += text
+                            }
+                        }
+                        if !combined.isEmpty { lastMessage = combined }
                     }
                     if obj["type"] as? String == "assistant",
                        let msg = obj["message"] as? [String: Any],
@@ -66,11 +90,15 @@ enum SessionScanner {
                     }
                 }
 
+                let title = !aiTitle.isEmpty ? aiTitle
+                          : !firstUserMessage.isEmpty ? firstUserMessage
+                          : "(no title)"
                 sessions.append(Session(
                     id: id,
                     projectDir: project,
                     cwd: cwd,
-                    title: title.isEmpty ? "(no title)" : title,
+                    title: title,
+                    lastMessage: lastMessage,
                     lastActivity: mtime,
                     messageCount: lines.count,
                     inputTokens: inputTokens,

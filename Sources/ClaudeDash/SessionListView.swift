@@ -136,11 +136,20 @@ struct RecentRow: View {
                 }
             }
 
-            Text(oneLineTitle)
-                .zoomFont(15)
-                .foregroundStyle(.primary.opacity(0.85))
-                .lineLimit(2)
-                .padding(.leading, 20)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(oneLineTitle)
+                    .zoomFont(15)
+                    .foregroundStyle(.primary.opacity(0.85))
+                    .lineLimit(2)
+                if !session.lastMessage.isEmpty {
+                    Text(oneLine(session.lastMessage))
+                        .zoomFont(13)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                        .truncationMode(.tail)
+                }
+            }
+            .padding(.leading, 20)
 
             HStack(spacing: 18) {
                 Text("msgs: \(session.messageCount)")
@@ -197,6 +206,10 @@ struct RecentRow: View {
 
     private var oneLineTitle: String {
         session.title.replacingOccurrences(of: "\n", with: " ")
+    }
+
+    private func oneLine(_ s: String) -> String {
+        s.replacingOccurrences(of: "\n", with: " ")
     }
 }
 
