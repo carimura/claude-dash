@@ -142,27 +142,22 @@ struct RecentRow: View {
                 .lineLimit(2)
                 .padding(.leading, 20)
 
-            HStack(spacing: 12) {
-                Label(relativeTime(session.lastActivity), systemImage: "clock")
-                    .zoomFont(16)
-                    .foregroundStyle(.secondary)
-                pill(text: "\(session.messageCount)", caption: "msgs")
+            HStack(spacing: 18) {
+                Text("msgs: \(session.messageCount)")
                 if session.contextSize > 0 {
-                    Text("\(formatTokens(session.contextSize)) context")
-                        .zoomFont(16)
-                        .foregroundStyle(.secondary)
+                    Text("context size: \(formatTokens(session.contextSize))")
                 }
                 if session.totalTokens > 0 {
-                    Text("\(formatTokens(session.totalTokens)) tokens")
-                        .zoomFont(16)
-                        .foregroundStyle(.secondary)
+                    Text("tokens: \(formatTokens(session.totalTokens))")
                         .help("\(session.inputTokens.formatted()) in · \(session.outputTokens.formatted()) out")
                 }
+                Spacer()
                 Text(String(session.id.prefix(8)))
                     .zoomFont(12, design: .monospaced)
                     .foregroundStyle(.tertiary)
-                Spacer()
             }
+            .zoomFont(14)
+            .foregroundStyle(.secondary)
             .padding(.leading, 20)
         }
         .padding(14)
@@ -194,19 +189,6 @@ struct RecentRow: View {
         }
     }
 
-    private func pill(text: String, caption: String) -> some View {
-        HStack(spacing: 5) {
-            Text(text)
-                .zoomFont(20, weight: .semibold, monoDigit: true)
-            Text(caption)
-                .zoomFont(12)
-                .foregroundStyle(.secondary)
-        }
-        .padding(.horizontal, 10)
-        .padding(.vertical, 4)
-        .background(Color.secondary.opacity(0.08), in: Capsule())
-    }
-
     private var displayPath: String {
         let p = session.cwd.isEmpty ? session.projectDir : session.cwd
         let home = NSHomeDirectory()
@@ -215,14 +197,6 @@ struct RecentRow: View {
 
     private var oneLineTitle: String {
         session.title.replacingOccurrences(of: "\n", with: " ")
-    }
-
-    private func relativeTime(_ date: Date) -> String {
-        let s = Date().timeIntervalSince(date)
-        if s < 60 { return "\(Int(s))s ago" }
-        if s < 3600 { return "\(Int(s / 60))m ago" }
-        if s < 86400 { return "\(Int(s / 3600))h ago" }
-        return "\(Int(s / 86400))d ago"
     }
 }
 
